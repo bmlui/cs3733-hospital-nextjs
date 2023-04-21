@@ -1,3 +1,5 @@
+
+
 import { useRouter } from 'next/router';
 
 export default function HospitalDirections() {
@@ -5,7 +7,7 @@ export default function HospitalDirections() {
   const { start, end, directions } = router.query;
 
   // Decode the directions and split them into an array of steps
-  const decodedDirections = decodeURIComponent(directions);
+  const decodedDirections = decodeURIComponent(String(directions ?? ''));
   const steps = decodedDirections.split(';');
 
   // Parse each step to extract the distance and location to turn at
