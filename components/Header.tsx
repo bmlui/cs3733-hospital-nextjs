@@ -1,4 +1,4 @@
-import logo from '../public/hale-logo-bwh.png'
+import logo from '../public/bwh-logo.svg'
 import Image from 'next/image'
 
 export default function Header() {
