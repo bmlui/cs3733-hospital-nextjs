@@ -1,5 +1,3 @@
-
-
 import { useRouter } from 'next/router';
 
 export default function HospitalDirections() {
@@ -26,9 +24,9 @@ export default function HospitalDirections() {
       <div className="grid grid-cols-1 gap-4">
         {parsedSteps.map((step, index) => (
           <div key={index} className="bg-white rounded-lg p-4 shadow-md">
-            <span className="font-bold mb-2">+{step.distance}m </span>
-            <span>{step.direction}</span>
-            <p>{step.location}</p>           
+            <span className="font-bold mb-2">{step.direction} </span>
+            <span> {step.distance}m</span>
+            <p className="text-gray-500">{step.location}</p>           
            
           </div>
         ))}
