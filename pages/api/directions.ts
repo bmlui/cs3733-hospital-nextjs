@@ -24,7 +24,6 @@ export default function handler(
     const shortLink = Math.random().toString(16).substring(2, length);
     directionsrepo.map1.set(shortLink, {start, end, directions});
     res.status(200).json({ message: 'Success', link: shortLink })
-
   } else {
     res.status(404);
   }
