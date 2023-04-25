@@ -1,12 +1,32 @@
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
 export default function HospitalDirections() {
+
+  const [data, setData] = useState(null);
   const router = useRouter();
-  const { start, end, directions } = router.query;
+  const { id } = router.query;
+
+  useEffect(() => {
+    console.log(id);
+     fetch('/api/directions/'+id, {
+      method: 'GET' 
+  }).then((response) => response.json()).then((data) => {
+    setData(data);
+  })
+}, [id])
+
+  if (!data) {
+    return <div>Loading...</div>;
+  }
 
   // Decode the directions and split them into an array of steps
-  const decodedDirections = decodeURIComponent(String(directions ?? ''));
+  try {
+  const decodedDirections = decodeURIComponent(String(data.directions ?? ''));
   const steps = decodedDirections.split(';');
+  } catch (e) {
+    console.log(e);
+  }
 
   // Parse each step to extract the distance and location to turn at
   const parsedSteps = steps.map((step) => {
@@ -20,7 +40,7 @@ export default function HospitalDirections() {
   // Display the parsed steps in cards
   return (
     <div className="p-8">
-      <h1 className="text-3xl font-bold mb-8">Directions from {start} to {end}</h1>
+      <h1 className="text-3xl font-bold mb-8">Directions from {data.start} to {data.end}</h1>
       <div className="grid grid-cols-1 gap-4">
         {parsedSteps.map((step, index) => (
           <div key={index} className="bg-white rounded-lg p-4 shadow-md">
