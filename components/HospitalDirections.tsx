@@ -10,8 +10,6 @@ export default function HospitalDirections() {
   const { id } = router.query;
 
   useEffect(() => {
-    
-    console.log(id);
      fetch('/api/directions/'+id, {
       method: 'GET' 
   }).then((response) => {
