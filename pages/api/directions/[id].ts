@@ -1,3 +1,4 @@
+//@ts-nocheck
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import directionsrepo from '../../../directionsrepo.js'
@@ -23,14 +24,13 @@ export default function handler(
 
     if (id === 'undefined') {
       res.status(404).end();
-      return;
     }
 
     const directions = directionsrepo.map1.get(id);
-    if (directions === undefined) {
-      res.status(404).end();
+    if (directions != undefined) {
+      res.status(200).json(directions); 
     } else {
-    res.status(200).json(directions);
+      res.status(404).end();
     }
   } else {
     res.status(404).end();

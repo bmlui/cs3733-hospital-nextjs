@@ -9,30 +9,32 @@ export default function HospitalDirections() {
   const { id } = router.query;
 
   useEffect(() => {
+    
     console.log(id);
      fetch('/api/directions/'+id, {
       method: 'GET' 
   }).then((response) => response.json()).then((data) => {
     setData(data);
   })
+  
 }, [id])
 
-  if (!data) {
+  if (!data || data == null || data == undefined || data == '' || data == 'undefined' || id == undefined || id == '' || id == 'undefined') {
     return <div>Loading...</div>;
   }
+   // Decode the directions and split them into an array of steps
+   const steps = data.directions.split(';');
+ 
+   // Parse each step to extract the distance and location to turn at
+   const parsedSteps = steps.map((step) => {
+     var fields = step.split('~');
+     const distance = fields[0];
+     const direction = fields[1];
+     const location = fields[2];
+     return { distance, direction, location };
+   });
+ 
 
-  // Decode the directions and split them into an array of steps
-  const decodedDirections = decodeURIComponent(String(data.directions ?? ''));
-  const steps = decodedDirections.split(';');
-
-  // Parse each step to extract the distance and location to turn at
-  const parsedSteps = steps.map((step) => {
-    var fields = step.split('~');
-    const distance = fields[0];
-    const direction = fields[1];
-    const location = fields[2];
-    return { distance, direction, location };
-  });
 
   // Display the parsed steps in cards
   return (
