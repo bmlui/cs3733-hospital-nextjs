@@ -13,9 +13,13 @@ export default function HospitalDirections() {
     console.log(id);
      fetch('/api/directions/'+id, {
       method: 'GET' 
-  }).then((response) => response.json()).then((data) => {
+  }).then((response) => {
+  if (response.status !== 200) {
+    throw new Error('Failed to fetch');
+  }
+  return response.json()}).then((data) => {
     setData(data);
-  })
+  }).catch((error) => {setData(null);});
   
 }, [id])
 
