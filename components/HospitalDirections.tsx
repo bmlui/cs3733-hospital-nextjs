@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 export default function HospitalDirections() {
 
   const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
   const router = useRouter();
   const { id } = router.query;
 
@@ -15,17 +16,24 @@ export default function HospitalDirections() {
       method: 'GET' 
   }).then((response) => {
   if (response.status !== 200) {
-    throw new Error('Failed to fetch');
+    setError(response.status);
+   throw new Error('Failed to fetch directions');
   }
   return response.json()}).then((data) => {
     setData(data);
+    setError(null);
   }).catch((error) => {setData(null);});
   
 }, [id])
 
+if (error != null)  {
+  return <div>Error: {error}</div>;
+}
+
   if (!data || data == null || data == undefined || data == '' || data == 'undefined' || id == undefined || id == '' || id == 'undefined') {
     return <div>Loading...</div>;
   }
+
    // Decode the directions and split them into an array of steps
    const steps = data.directions.split(';');
  
@@ -48,12 +56,14 @@ export default function HospitalDirections() {
         {parsedSteps.map((step, index) => (
           <div key={index} className="bg-white rounded-lg p-4 shadow-md">
             <span className="font-bold mb-2">{step.direction} </span>
-            <span> {step.distance}m</span>
+            <span> {step.distance}ft</span>
             <p className="text-gray-500">{step.location}</p>           
            
           </div>
         ))}
+              <p className='text-gray-500 text-center'>This link lasts up to 1 hour after generaiton from kiosk.</p>
       </div>
+
     </div>
   );
 }
