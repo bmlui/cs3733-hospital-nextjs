@@ -21,12 +21,8 @@ export default function HospitalDirections() {
   }
 
   // Decode the directions and split them into an array of steps
-  try {
   const decodedDirections = decodeURIComponent(String(data.directions ?? ''));
   const steps = decodedDirections.split(';');
-  } catch (e) {
-    console.log(e);
-  }
 
   // Parse each step to extract the distance and location to turn at
   const parsedSteps = steps.map((step) => {
