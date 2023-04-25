@@ -3,7 +3,6 @@ import Header from '../components/Header'
 import HospitalDirections from '../components/HospitalDirections'
 
 export default function Home() {
-  const encodedDirections = "Go+straight+for+100+meters%3B+Turn+left%3B+Go+straight+for+another+50+meters";
 
   return (
     <div>

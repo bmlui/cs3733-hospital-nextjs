@@ -20,7 +20,7 @@ export default function handler(
 
   if (req.method === 'POST') {
     const { start, end, directions } = req.body;
-    const shortLink = Math.random().toString(16).substring(2, 8);
+    const shortLink = Math.random().toString(16).substring(2, 12);
     directionsrepo.map1.set(shortLink, {start, end, directions});
     res.status(200).json({ message: 'Success', link: shortLink })
   } else {

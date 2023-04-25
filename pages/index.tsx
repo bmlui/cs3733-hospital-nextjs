@@ -8,7 +8,6 @@ const inter = Inter({ subsets: ['latin'] })
 export default function Home() {
   return (
     <div>
-
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
     <Head>
       <title>Scan QR Code to Get Started</title>
