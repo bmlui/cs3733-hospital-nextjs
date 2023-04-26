@@ -1,6 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-import directionsrepo from '../../../temp/directionsrepo'
 
 type Directions = {
   start: string
@@ -9,8 +8,8 @@ type Directions = {
 }
 
 type Data = { 
-  message: string
-  link: string
+  message?: string
+  shortLink?: string
 }
 
 export default function handler(
@@ -19,17 +18,36 @@ export default function handler(
 ) {
 
   if (req.method === 'POST') {
-    const { start, end, directions } = req.body;
-    const shortLink = Math.random().toString(36).substring(2, 8);
-    if (directionsrepo.map1.has(shortLink)) {
-      res.status(500).end();
-    } else {
-      directionsrepo.map1.set(shortLink, {start, end, directions});
-      res.status(200).json({ message: 'Success', link: shortLink })
-    }
+    const start = encodeURI(req.body.start);
+    const end = encodeURI(req.body.end);
+    const directions = encodeURI(req.body.directions);
+    const generateDate = encodeURI(new Date().toISOString().slice(0, 10)); 
+    const forDate = encodeURI(req.body.forDate);
+    const axios = require('axios');
 
+    const longLink = `${process.env.DOMAIN_URL}/directions?start=${start}&end=${end}&directions=${directions}&generateDate=${generateDate}&forDate=${forDate}`;
+    const domain = `${process.env.FIREBASE_SHORT_LINK_DOMAIN}`;
+ const shortening = axios.post(`https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${process.env.FIREBASE_API_KEY}`, {
+        dynamicLinkInfo: {
+            domainUriPrefix: domain,
+            link: longLink
+        },
+        suffix: {
+            option: 'SHORT'
+        }
+    })
+    .then((response: { data:Data }) => {
+        console.log(response.data.shortLink);
+        res.status(200).json(response.data);
+        return response.data;
+    })
+    .catch((error: any) => {
+        console.error(error);
+        return error;
+    });
   } else {
-    res.status(404);
+    res.status(404).json({ message: 'not found' });
+    return;
   }
-
+  
 }

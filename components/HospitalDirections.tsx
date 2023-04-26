@@ -3,37 +3,22 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
 export default function HospitalDirections() {
-
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
   const router = useRouter();
-  const { id } = router.query;
+const data = router.query;
 
-  useEffect(() => {
-     fetch('/api/directions/'+id, {
-      method: 'GET' 
-  }).then((response) => {
-  if (response.status !== 200) {
-    setError(response.status);
-   throw new Error('Failed to fetch directions');
-  }
-  return response.json()}).then((data) => {
-    setData(data);
-    setError(null);
-  }).catch((error) => {setData(null);});
-  
-}, [id])
 
-if (error != null)  {
-  return <div>Error: {error}</div>;
-}
-
-  if (!data || data == null || data == undefined || data == '' || data == 'undefined' || id == undefined || id == '' || id == 'undefined') {
-    return <div>Loading...</div>;
+  if (data.directions == undefined || data.start == undefined || data.end == undefined) {
+    return <div>Error: Invalid Data</div>;
   }
 
    // Decode the directions and split them into an array of steps
-   const steps = data.directions.split(';');
+
+   const steps = decodeURI(data.directions).split(';');
+   const start = decodeURI(data.start);
+    const end = decodeURI(data.end);
+    const generateDate = decodeURI(data.generateDate);
+    const forDate = decodeURI(data.forDate);
+
  
    // Parse each step to extract the distance and location to turn at
    const parsedSteps = steps.map((step) => {
@@ -49,7 +34,7 @@ if (error != null)  {
   // Display the parsed steps in cards
   return (
     <div className="p-8">
-      <h1 className="text-3xl font-bold mb-8">Directions from {data.start} to {data.end}</h1>
+      <h1 className="text-3xl font-bold mb-8">Directions from {start} to {end}</h1>
       <div className="grid grid-cols-1 gap-4">
         {parsedSteps.map((step, index) => (
           <div key={index} className="bg-white rounded-lg p-4 shadow-md">
@@ -59,7 +44,8 @@ if (error != null)  {
            
           </div>
         ))}
-              <p className='text-gray-500 text-center'>This link lasts up to 1 hour after generaiton from kiosk.</p>
+        { (forDate == undefined || generateDate == undefined) ? <p className='text-gray-500 text-center'>These directions were generated on {generateDate} for {forDate}.</p> : null}
+          
       </div>
 
     </div>
