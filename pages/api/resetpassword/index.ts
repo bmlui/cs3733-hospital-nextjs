@@ -44,25 +44,6 @@ export default function handler(
 
   console.log(email, username,  subject, linkMessage);
     res.status(200).json({ message: 'success', username: username });
-  } else if (req.method === 'GET') {
-    const { username, token  } = req.query;
-    console.log(token + " " + username)
-    if (token == undefined || username == undefined) {
-        res.status(404).end();
-      }
-    const storedToken = resetpasswordrepo.tokenMap.get(username);
-
-    console.log(storedToken);
-    if (storedToken != undefined) {
-        if (storedToken === token) {
-          res.status(200).json({ message: 'valididated' }); 
-          } else {
-          res.status(401).end();
-          }
-
-        } else {
-          res.status(404).end();
-        }
   } else if (req.method === 'PUT') {
     const { username, token, hashedpassword, salt } = req.body;
     if (token == undefined || hashedpassword == undefined || salt == undefined) {
@@ -83,4 +64,5 @@ export default function handler(
   }
 
 }
+res.status(404);
 }

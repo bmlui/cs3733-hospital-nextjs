@@ -14,7 +14,7 @@ export default function PasswordResetForm() {
   const { username , token } = router.query;
 
 useEffect (() => {
-    fetch(`/api/resetpassword?username=${username}&token=${token}`, {
+    fetch(`/api/resetpassword/${token}?username=${username}`, {
       method: 'GET'}).then((response) => {
         if (response.status !== 200 ) {
           setPageError(response.status.toString() + ' Token is invalid or expired');
