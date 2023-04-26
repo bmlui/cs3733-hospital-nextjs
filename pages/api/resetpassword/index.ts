@@ -23,8 +23,8 @@ export default function handler(
       }
     const token = nanoid(32);
     resetpasswordrepo.tokenMap.set(username, token);
-    const linkMessage = `A request was made to reset the password associated with your account. Click the link below to reset your password. If you did not make this request, please contact your administratior immediately. 
-    <br><br> ${process.env.DOMAIN_URL}/resetpassword?username=${username}&token=${resetpasswordrepo.tokenMap.get(username)}`;
+    const link = `A request was made to reset the password associated with your account. Click the link below to reset your password. If you did not make this request, please contact your administratior immediately. 
+    <br><br> ${process.env.DOMAIN_URL}/resetpassword?username=${username}&token=${token}`;
 
     const email = resetpasswordrepo.emailMap.get(username);
     const subject = "Reset Password";
@@ -42,6 +42,7 @@ export default function handler(
     });
 
   //todo error handling
+
   console.log(email, username,  subject, linkMessage);
     res.status(200).json({ message: 'success', username: username });
   } else if (req.method === 'GET') {
@@ -51,6 +52,7 @@ export default function handler(
         res.status(404).end();
       }
     const storedToken = resetpasswordrepo.tokenMap.get(username);
+
     console.log(storedToken);
     if (storedToken != undefined) {
         if (storedToken === token) {
@@ -58,6 +60,7 @@ export default function handler(
           } else {
           res.status(401).end();
           }
+
         } else {
           res.status(404).end();
         }
@@ -71,6 +74,7 @@ export default function handler(
         //todo update password in database
         if (storedToken === token) {
         resetpasswordrepo.tokenMap.delete(username);
+
         res.status(200).json({ message: 'success', username: username });
         } else {
             res.status(401).end();
