@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { isNull } from 'util';
 
 export default function PasswordResetForm() {
   const [username, setUsername] = useState('');
@@ -48,8 +47,15 @@ if (loading == true) {
     }
     // Submit form data to server using fetch or axios
     // On success, display success message to user
-    setSuccessMessage('Password reset successful');
+    setSuccessMessage('Password reset successful. Redirecting to login page...');
     setError('');
+    setConfirmPassword('');
+    setNewPassword('');
+
+    // Redirect to login page after 2 seconds
+     setTimeout(() => {
+    router.push('/login');
+    }, 3000);
 
   };
 
