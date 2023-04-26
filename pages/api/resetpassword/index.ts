@@ -27,6 +27,7 @@ export default function handler(
     <br><br> ${process.env.DOMAIN_URL}/resetpassword?username=${username}&token=${resetpasswordrepo.tokenMap.get(username)}`;
     const email:String = resetpasswordrepo.emailMap.get(username);
     const subject:String = "Reset Password";
+
     const sg =   fetch(`${process.env.DOMAIN_URL}/api/sendgrid`, {
       body: JSON.stringify({
         email: email,
