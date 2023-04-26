@@ -1,3 +1,11 @@
+- **Framework**: [Next.js](https://nextjs.org/)
+- **Database**: [AWS PostgreSQL](https://aws.amazon.com/rds/postgresql/) with [Prisma](https://www.prisma.io)
+- **Authentication**: [NextAuth.js](https://next-auth.js.org)
+- **Deployment**: [Vercel](https://vercel.com)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com)
+- **Analytics**: [Vercel Analytics](https://vercel.com/analytics)
+- **Email**: [Twilio SendGrid](https://sendgrid.com)
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started

@@ -23,7 +23,6 @@ export default function handler(
       }
     const token = nanoid(32);
     resetpasswordrepo.tokenMap.set(username, token);
-    
     const link = `A request was made to reset the password associated with your account. Click the link below to reset your password. If you did not make this request, please contact your administratior immediately. 
     <br><br> ${process.env.DOMAIN_URL}/resetpassword?username=${username}&token=${token}`;
 
@@ -34,7 +33,7 @@ export default function handler(
         email: email,
         fullname: username,
         subject: subject,
-        message: link,
+        message: linkMessage,
       }),
       headers: {
         "Content-Type": "application/json",
@@ -43,8 +42,9 @@ export default function handler(
     });
 
   //todo error handling
-  console.log(email, username,  subject, link);
-    res.status(200).json({ message: 'Success', username: username });
+
+  console.log(email, username,  subject, linkMessage);
+    res.status(200).json({ message: 'success', username: username });
   } else if (req.method === 'GET') {
     const { username, token  } = req.query;
     console.log(token + " " + username)
@@ -52,13 +52,15 @@ export default function handler(
         res.status(404).end();
       }
     const storedToken = resetpasswordrepo.tokenMap.get(username);
-    console.log(storedToken)
+
+    console.log(storedToken);
     if (storedToken != undefined) {
         if (storedToken === token) {
-          res.status(200).json({ message: 'Valididated token and username pair' }); 
-        } else {
+          res.status(200).json({ message: 'valididated' }); 
+          } else {
           res.status(401).end();
-        }
+          }
+
         } else {
           res.status(404).end();
         }
@@ -72,7 +74,8 @@ export default function handler(
         //todo update password in database
         if (storedToken === token) {
         resetpasswordrepo.tokenMap.delete(username);
-        res.status(200).json({ message: 'Success', username: username });
+
+        res.status(200).json({ message: 'success', username: username });
         } else {
             res.status(401).end();
         }

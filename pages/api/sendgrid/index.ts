@@ -1,8 +1,13 @@
 import sendgrid from "@sendgrid/mail";
+import { NextApiRequest } from "next";
 
-sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
+if (!process.env.SENDGRID_API_KEY) {
+  throw new Error("SENDGRID_API_KEY is not set");
+} else {
+  sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
+}
 
-async function sendEmail(req, res) {
+async function sendEmail(  req: any, res: any ) {
   try {
     // console.log("REQ.BODY", req.body);
     await sendgrid.send({
@@ -210,7 +215,7 @@ async function sendEmail(req, res) {
     });
   } catch (error) {
      console.log(error);
-    return res.status(error.statusCode || 500).json({ error: error.message });
+    return res.status(error || 500).json({ error: error });
   }
 
   return res.status(200).json({ success: true });
