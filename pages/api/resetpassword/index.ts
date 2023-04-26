@@ -25,12 +25,11 @@ export default function handler(
     resetpasswordrepo.tokenMap.set(token, {username});
     
     const link = `A request was made to reset the password associated with your account. Click the link below to reset your password. If you did not make this request, please contact your administratior immediately. 
-    <br><br> https://teamc.blui.co/resetpassword?token=${token}`;
+    <br><br> ${process.env.DOMAIN_URL}/resetpassword?token=${token}`;
 
     const email = resetpasswordrepo.emailMap.get(username);
     const subject = "Reset Password";
-    const sg =   fetch("https://teamc.blui.co/api/sendgrid", {
-
+    const sg =   fetch(`${process.env.DOMAIN_URL}/api/sendgrid`, {
       body: JSON.stringify({
         email: email,
         fullname: username,
