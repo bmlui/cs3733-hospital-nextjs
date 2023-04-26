@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 
 
 export default function PasswordResetForm() {
-  const [username, setUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -11,17 +10,16 @@ export default function PasswordResetForm() {
   const [loading, setLoading] = useState(true);
   const [pageError, setPageError] = useState('');
   const router = useRouter();
-  const { token } = router.query;
+  const { username , token } = router.query;
 
 useEffect (() => {
-    fetch('/api/resetpassword?token='+token, {
+    fetch(`/api/resetpassword?username=${username}&token=${token}`, {
       method: 'GET'}).then((response) => {
       if (response.status !== 200) {
         setPageError(response.status.toString() + ' Invalid token');
        throw new Error('Failed to fetch token from temp data');
       }
       return response.json()}).then((data) => {
-        setUsername(data.username);
         setError('');
         setLoading(false);
         setPageError('');
