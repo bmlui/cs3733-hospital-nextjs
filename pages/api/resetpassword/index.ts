@@ -2,6 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import resetpasswordrepo from '../../../temp/resetpasswordrepo'
 import { nanoid } from "nanoid";
+import { useEffect } from 'react';
 
 type Data = { 
   message: string
@@ -18,13 +19,14 @@ export default function handler(
         res.status(404).end();
       }
     const token = nanoid(48);
-    resetpasswordrepo.map1.set(token, {username});
+    resetpasswordrepo.tokenMap.set(token, {username});
     
-    const link = `https://teamc.blui.co/resetpassword?token=${token}`;
-    const email = "blui@wpi.edu";
+    const link = `A request was made to reset the password associated with your account. Click the link below to reset your password. If you did not make this request, please contact your administratior immediately. 
+    <br><br> http://teamc.blui.co/resetpassword?token=${token}`;
+    resetpasswordrepo.populateMap();
+    const email = resetpasswordrepo.emailMap.get(username);
     const subject = "Reset Password";
-
-    const sg =   fetch("/api/sendgrid", {
+    const sg =   fetch("http://teamc.blui.co/api/sendgrid", {
       body: JSON.stringify({
         email: email,
         fullname: username,
@@ -37,19 +39,17 @@ export default function handler(
       method: "POST",
     });
 
-    // const { error } =  sg.json();
-    // if (error) {
-    //   console.log(error);
-    //   return;
-    // }
+  //todo error 
+  
   console.log(email, username,  subject, link);
-    res.status(200).json({ message: 'Success' })
+    res.status(200).json({ message: 'Success' });
   } else if (req.method === 'GET') {
     const { token } = req.query;
+    console.log(token)
     if (token === undefined) {
         res.status(404).end();
       }
-    const data = resetpasswordrepo.map1.get(token);
+    const data = resetpasswordrepo.tokenMap.get(token);
     if (data != undefined) {
         res.status(200).json(data); 
         } else {
@@ -60,10 +60,10 @@ export default function handler(
     if (token === undefined || hashedpassword === undefined || salt === undefined) {
         res.status(404).end();
         }
-    const data = resetpasswordrepo.map1.get(token);
+    const data = resetpasswordrepo.tokenMap.get(token);
     if (data != undefined) {
         //todo update password in database
-        resetpasswordrepo.map1.delete(token);
+        resetpasswordrepo.tokenMap.delete(token);
         res.status(200).json({ message: 'Success' });
         } else {
             res.status(404).end();

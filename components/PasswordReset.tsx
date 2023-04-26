@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { isNull } from 'util';
 
 export default function PasswordResetForm() {
   const [username, setUsername] = useState('');
@@ -8,31 +10,25 @@ export default function PasswordResetForm() {
   const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [pageError, setPageError] = useState('');
-  const [token, setToken] = useState('');
+  const router = useRouter();
+  const { token } = router.query;
 
 useEffect (() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const tokenTemp = urlParams.get('token');
-      if (tokenTemp == null) {
-        setPageError('No token provided');
-        return;
-      } else {
-        setToken(tokenTemp);
-      }
     fetch('/api/resetpassword?token='+token, {
       method: 'GET'}).then((response) => {
       if (response.status !== 200) {
-        setPageError(response.status.toString() + ' Failed to fetch token');
-       throw new Error('Failed to fetch token');
+        setPageError(response.status.toString() + ' Invalid token');
+       throw new Error('Failed to fetch token from temp data');
       }
       return response.json()}).then((data) => {
         setUsername(data.username);
         setError('');
         setLoading(false);
+        setPageError('');
       }).catch((error) => {setError(error);});
-}, []);
+}, [token]);
 
-if (pageError != null)  {
+if (pageError != null && pageError != '')  {
   return <div>Error: {pageError}</div>;
 }
 if (loading == true) {
