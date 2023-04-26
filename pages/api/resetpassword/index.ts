@@ -2,10 +2,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import resetpasswordrepo from '../../../temp/resetpasswordrepo'
 import { nanoid } from "nanoid";
-import { useEffect } from 'react';
 
 type Data = { 
   message: string
+  username?: string
 }
 
 export default function handler(
@@ -21,11 +21,11 @@ export default function handler(
         res.status(404).end();
         return;
       }
-    const token = nanoid(48);
-    resetpasswordrepo.tokenMap.set(token, {username});
+    const token = nanoid(32);
+    resetpasswordrepo.tokenMap.set(username, token);
     
     const link = `A request was made to reset the password associated with your account. Click the link below to reset your password. If you did not make this request, please contact your administratior immediately. 
-    <br><br> ${process.env.DOMAIN_URL}/resetpassword?token=${token}`;
+    <br><br> ${process.env.DOMAIN_URL}/resetpassword?username=${username}&token=${token}`;
 
     const email = resetpasswordrepo.emailMap.get(username);
     const subject = "Reset Password";
@@ -42,37 +42,43 @@ export default function handler(
       method: "POST",
     });
 
-  //todo error 
-  
+  //todo error handling
   console.log(email, username,  subject, link);
-    res.status(200).json({ message: 'Success' });
+    res.status(200).json({ message: 'Success', username: username });
   } else if (req.method === 'GET') {
-    const { token } = req.query;
-    console.log(token)
-    if (token === undefined) {
+    const { username, token  } = req.query;
+    console.log(token + " " + username)
+    if (token == undefined || username == undefined) {
         res.status(404).end();
       }
-    const data = resetpasswordrepo.tokenMap.get(token);
-    if (data != undefined) {
-        res.status(200).json(data); 
+    const storedToken = resetpasswordrepo.tokenMap.get(username);
+    console.log(storedToken)
+    if (storedToken != undefined) {
+        if (storedToken === token) {
+          res.status(200).json({ message: 'Valididated token and username pair' }); 
+        } else {
+          res.status(401).end();
+        }
         } else {
           res.status(404).end();
         }
   } else if (req.method === 'PUT') {
-    const { token, hashedpassword, salt } = req.body;
-    if (token === undefined || hashedpassword === undefined || salt === undefined) {
+    const { username, token, hashedpassword, salt } = req.body;
+    if (token == undefined || hashedpassword == undefined || salt == undefined) {
         res.status(404).end();
         }
-    const data = resetpasswordrepo.tokenMap.get(token);
-    if (data != undefined) {
+    const storedToken = resetpasswordrepo.tokenMap.get(username);
+    if (storedToken != undefined) {
         //todo update password in database
-        resetpasswordrepo.tokenMap.delete(token);
-        res.status(200).json({ message: 'Success' });
+        if (storedToken === token) {
+        resetpasswordrepo.tokenMap.delete(username);
+        res.status(200).json({ message: 'Success', username: username });
         } else {
-            res.status(404).end();
+            res.status(401).end();
         }
     } else {
     res.status(404);
   }
 
+}
 }
