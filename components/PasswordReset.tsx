@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import bcrypt from 'bcryptjs';
 
 
 export default function PasswordResetForm() {
@@ -15,16 +16,21 @@ export default function PasswordResetForm() {
 useEffect (() => {
     fetch(`/api/resetpassword?username=${username}&token=${token}`, {
       method: 'GET'}).then((response) => {
-      if (response.status !== 200) {
-        setPageError(response.status.toString() + ' Invalid token');
-       throw new Error('Failed to fetch token from temp data');
-      }
+        if (response.status !== 200 ) {
+          setPageError(response.status.toString() + ' Token is invalid or expired');
+          throw new Error('Failed to fetch token from temp data');
+        }
       return response.json()}).then((data) => {
-        setError('');
-        setLoading(false);
-        setPageError('');
+        if (data.message != 'valididated') {
+          setPageError('Token is invalid or expired');
+          throw new Error('Failed to fetch token from temp data');
+        } else {
+          setError('');
+          setLoading(false);
+          setPageError('');
+        }
       }).catch((error) => {setError(error);});
-}, [token]);
+}, [username, token]);
 
 if (pageError != null && pageError != '')  {
   return <div>Error: {pageError}</div>;
@@ -44,19 +50,37 @@ if (loading == true) {
       setError('Passwords do not match');
       return;
     }
-    // Submit form data to server using fetch or axios
-    // On success, display success message to user
-    setSuccessMessage('Password reset successful. Redirecting to login page...');
-    setError('');
-    setConfirmPassword('');
-    setNewPassword('');
-
-    // Redirect to login page after 2 seconds
-     setTimeout(() => {
-    router.push('/login');
-    }, 3000);
-
-
+    const salt = bcrypt.genSaltSync(10);
+    const hashedpassword = bcrypt.hashSync(newPassword, salt);
+    fetch('/api/resetpassword', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username:username, token:token, hashedpassword:hashedpassword, salt:salt }),
+      }).then((response) => {
+        if (response.status !== 200) {
+          setError('Failed to reset password');
+          throw new Error(response.status +' '+ response.statusText+ ' Failed to reset password');
+        }
+        return response.json();
+      }).then((data) => {
+        if (data.message != 'success') {
+          setError('Failed to reset password');
+          throw new Error('Failed to reset password');
+        } else {
+          setSuccessMessage('Password reset successful. Redirecting to login page...');
+          setError('');
+          setConfirmPassword('');
+          setNewPassword('');
+          // Redirect to login page after 2 seconds
+          setTimeout(() => {
+            router.push('/login');
+          }, 3000);
+        }
+      }).catch((error) => {
+        setError(error);
+      });
   };
 
   return (
