@@ -15,15 +15,18 @@ export default function handler(
 
   if (req.method === 'POST') {
     const { username } = req.body;
-    if (req.body.username === undefined) {
+    resetpasswordrepo.populateMap();
+    if (req.body.username === undefined || req.body.username === "" || req.body.username === null || 
+        !resetpasswordrepo.emailMap.has(req.body.username)) {
         res.status(404).end();
+        return;
       }
     const token = nanoid(48);
     resetpasswordrepo.tokenMap.set(token, {username});
     
     const link = `A request was made to reset the password associated with your account. Click the link below to reset your password. If you did not make this request, please contact your administratior immediately. 
     <br><br> http://teamc.blui.co/resetpassword?token=${token}`;
-    resetpasswordrepo.populateMap();
+
     const email = resetpasswordrepo.emailMap.get(username);
     const subject = "Reset Password";
     const sg =   fetch("http://teamc.blui.co/api/sendgrid", {
