@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-import resetpasswordrepo from '../../../temp/resetpasswordrepo'
+import resetpasswordrepo from '../../../temp/resetpassword/resetpasswordrepo'
 
 type Data = { 
   message: string

@@ -1,5 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
+import EncodeDecode from '@/temp/resetpassword/encodedecode'
 
 type Directions = {
   start: string
@@ -25,7 +26,8 @@ export default function handler(
     const forDate = encodeURI(req.body.forDate);
     const axios = require('axios');
 
-    const longLink = `${process.env.DOMAIN_URL}/directions?start=${start}&end=${end}&directions=${directions}&generateDate=${generateDate}&forDate=${forDate}`;
+    const encodeddirections = EncodeDecode.encodeDirections(start, end, directions, generateDate, forDate);
+    const longLink = `${process.env.DOMAIN_URL}/directions${encodeddirections}`;
     const domain = `${process.env.FIREBASE_SHORT_LINK_DOMAIN}`;
  const shortening = axios.post(`https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${process.env.FIREBASE_API_KEY}`, {
         dynamicLinkInfo: {
