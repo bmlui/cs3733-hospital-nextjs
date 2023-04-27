@@ -1,4 +1,5 @@
 //@ts-nocheck
+import EncodeDecode from '@/temp/resetpassword/encodedecode';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
@@ -13,11 +14,11 @@ const data = router.query;
 
    // Decode the directions and split them into an array of steps
 
-   const steps = decodeURI(data.directions).split(';');
-   const start = decodeURI(data.start);
-    const end = decodeURI(data.end);
-    const generateDate = decodeURI(data.generateDate);
-    const forDate = decodeURI(data.forDate);
+   const steps = EncodeDecode.decodeDirections(data.directions).split(';');
+   const start = EncodeDecode.decodeDirections(data.start);
+    const end = EncodeDecode.decodeDirections(data.end);
+    const generateDate = EncodeDecode.decodeDirections(data.generateDate);
+    const forDate = EncodeDecode.decodeDirections(data.forDate);
 
  
    // Parse each step to extract the distance and location to turn at
@@ -29,9 +30,7 @@ const data = router.query;
      return { distance, direction, location };
    });
  
-
-
-  // Display the parsed steps in cards
+ // Display the parsed steps in cards
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-8">Directions from {start} to {end}</h1>
@@ -44,8 +43,7 @@ const data = router.query;
            
           </div>
         ))}
-        { (forDate == undefined || generateDate == undefined) ? <p className='text-gray-500 text-center'>These directions were generated on {generateDate} for {forDate}.</p> : null}
-          
+        <p className='text-gray-500 text-center'>These directions were generated on {generateDate} for {forDate}.</p>
       </div>
 
     </div>
