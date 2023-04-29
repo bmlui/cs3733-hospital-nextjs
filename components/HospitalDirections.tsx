@@ -1,5 +1,5 @@
 //@ts-nocheck
-import EncodeDecode from '@/temp/resetpassword/encodedecode';
+import EncodeDecode from '@/temp/encodedecode';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
