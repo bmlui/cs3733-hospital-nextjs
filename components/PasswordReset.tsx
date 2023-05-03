@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import bcrypt from 'bcryptjs';
+const crypto = require('crypto')
 
 
 export default function PasswordResetForm() {
@@ -50,8 +50,8 @@ if (loading == true) {
       setError('Passwords do not match');
       return;
     }
-    const salt = bcrypt.genSaltSync(10);
-    const hashedpassword = bcrypt.hashSync(newPassword, salt);
+    const salt:String = (crypto.randomBytes(20).toString('hex')).toUpperCase();
+    const hashedpassword = (crypto.createHash('sha256').update(newPassword+salt).digest('hex')).toUpperCase();
     fetch('/api/resetpassword', {
       method: 'PUT',
       headers: {
